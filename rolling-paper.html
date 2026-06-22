@@ -88,15 +88,12 @@
   .submit-row { display: flex; justify-content: flex-end; margin-top: 16px; }
 
   /* --- 포스트잇 게시판 스타일 --- */
-  .board { 
-    display: flex !important; 
-    flex-wrap: wrap !important; 
-    gap: 30px !important; 
-    justify-content: center !important; 
-    align-items: flex-start !important;
-    padding: 40px 20px !important;
-    width: 100% !important;
-  }
+ .board {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, 250px);
+  gap: 30px;
+  justify-content: center;
+}
 
   /* --- 포스트잇 카드 스타일 --- */
   .card { 
