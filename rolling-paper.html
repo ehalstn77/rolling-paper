@@ -58,8 +58,8 @@
   .pen-row label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
   .pen-row input[type=range] { flex: 1; accent-color: var(--text); }
   .submit-row { display: flex; justify-content: flex-end; margin-top: 16px; }
-  .board { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; align-items: flex-start; padding: 40px 20px; width: 100%; }
-  .card { display: flex; flex-direction: column; width: 250px; min-height: 250px; position: relative; border-radius: 4px; padding: 24px 20px 20px; border: none; box-shadow: 3px 5px 12px rgba(0,0,0,0.2); animation: fadeIn 0.4s ease-out; overflow: visible; flex-shrink: 0; }
+  .board { display: flex !important; flex-wrap: wrap !important; gap: 30px !important; justify-content: center !important; align-items: flex-start !important; padding: 40px 20px !important; width: 100% !important; position: relative !important; }
+  .card { display: flex !important; flex-direction: column !important; width: 250px !important; min-height: 250px !important; position: relative !important; border-radius: 4px !important; padding: 24px 20px 20px !important; border: none !important; box-shadow: 3px 5px 12px rgba(0,0,0,0.2) !important; animation: fadeIn 0.4s ease-out !important; overflow: visible !important; flex-shrink: 0 !important; flex-grow: 0 !important; }
   @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   .card::before { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 16px; height: 16px; background-color: #E53935; border-radius: 50%; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3), 2px 2px 4px rgba(0,0,0,0.4); z-index: 2; }
   .card::after { content: ''; position: absolute; top: -3px; left: 50%; transform: translateX(-50%) rotate(30deg); width: 2px; height: 12px; background-color: #777; z-index: 1; box-shadow: 1px 1px 1px rgba(0,0,0,0.2); }
@@ -238,18 +238,27 @@ window._renderCards = function(items) {
   document.getElementById('count-badge').textContent = items.length + '개';
   if (items.length === 0) { board.innerHTML = ''; empty.style.display = ''; return; }
   empty.style.display = 'none';
-  board.innerHTML = items.map((card, i) => {
+
+  // 기존 카드 전부 제거 후 새로 추가
+  board.innerHTML = '';
+  items.forEach((card, i) => {
     const rot = (Math.sin(i * 12345.67) * 3).toFixed(1);
+    const wrap = document.createElement('div');
+    wrap.className = 'card';
+    wrap.style.cssText = `background:${card.color.bg};color:${card.color.text};transform:rotate(${rot}deg);display:flex;flex-direction:column;width:250px;min-height:250px;position:relative;border-radius:4px;padding:24px 20px 20px;border:none;box-shadow:3px 5px 12px rgba(0,0,0,0.2);overflow:visible;flex-shrink:0;flex-grow:0;`;
     const inner = card.type === 'text'
-      ? `<div class="card-text">${esc(card.text).replace(/\n/g,'<br>')}</div>`
-      : `<img class="card-img" src="${card.dataURL}" alt="${esc(card.name)}의 손글씨" />`;
-    return `<div class="card" style="background:${card.color.bg};color:${card.color.text};transform:rotate(${rot}deg)">
-      <button class="card-del" onclick="deleteCard('${card.id}')" aria-label="삭제"><i class="ti ti-x"></i></button>
-      <div class="card-name">${esc(card.name)}</div>
+      ? `<div class="card-text" style="font-size:15px;line-height:1.6;word-break:break-word;flex:1;">${esc(card.text).replace(/\n/g,'<br>')}</div>`
+      : `<img class="card-img" src="${card.dataURL}" alt="${esc(card.name)}의 손글씨" style="width:100%;border-radius:4px;display:block;" />`;
+    wrap.innerHTML = `
+      <button class="card-del" onclick="deleteCard('${card.id}')" aria-label="삭제" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.1);border:none;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.15s;font-size:14px;color:inherit;z-index:3;"><i class="ti ti-x"></i></button>
+      <div class="card-name" style="font-size:13px;font-weight:700;margin-bottom:12px;opacity:0.8;border-bottom:1px solid rgba(0,0,0,0.1);padding-bottom:5px;">${esc(card.name)}</div>
       ${inner}
-      <div class="card-time">${card.time}</div>
-    </div>`;
-  }).join('');
+      <div class="card-time" style="font-size:11px;opacity:0.5;text-align:right;margin-top:15px;">${card.time}</div>
+    `;
+    wrap.addEventListener('mouseenter', () => wrap.querySelector('.card-del').style.opacity = '1');
+    wrap.addEventListener('mouseleave', () => wrap.querySelector('.card-del').style.opacity = '0');
+    board.appendChild(wrap);
+  });
 };
 
 function buildColorRow() {
