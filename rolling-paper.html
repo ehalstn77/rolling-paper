@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/rolling-paper.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -20,228 +21,92 @@
     --radius-lg: 14px;
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1a1a1a;
-      --surface: #252525;
-      --border: rgba(255,255,255,0.10);
-      --border-md: rgba(255,255,255,0.20);
-      --text: #f0f0f0;
-      --text-muted: #a0a0a0;
-      --text-hint: #666;
+      --bg: #1a1a1a; --surface: #252525;
+      --border: rgba(255,255,255,0.10); --border-md: rgba(255,255,255,0.20);
+      --text: #f0f0f0; --text-muted: #a0a0a0; --text-hint: #666;
     }
   }
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px 16px 80px;
-  }
-
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 16px 80px; }
   .wrap { max-width: 860px; margin: 0 auto; }
 
-  /* ── 헤더 ── */
-  .top-bar {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
-  }
-  .title-wrap h1 {
-    font-size: 22px; font-weight: 600; letter-spacing: -0.3px;
-  }
-  .title-wrap p {
-    font-size: 13px; color: var(--text-muted); margin-top: 3px;
-  }
+  .top-bar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .title-wrap h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+  .title-wrap p { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
   .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  /* ── 버튼 ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 13px; font-family: var(--font);
-    padding: 7px 14px; border-radius: var(--radius-md);
-    border: 1px solid var(--border-md);
-    background: transparent; color: var(--text);
-    cursor: pointer; transition: background 0.15s;
-    white-space: nowrap;
-  }
+  .btn { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-family: var(--font); padding: 7px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-md); background: transparent; color: var(--text); cursor: pointer; transition: background 0.15s; white-space: nowrap; }
   .btn:hover { background: rgba(0,0,0,0.05); }
-  .btn-primary {
-    background: var(--text); color: var(--bg);
-    border-color: var(--text);
-  }
+  .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
   .btn-primary:hover { opacity: 0.82; background: var(--text); }
 
-  /* ── 작성 카드 ── */
-  .compose-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 20px; margin-bottom: 28px;
-  }
-  .compose-row1 {
-    display: flex; gap: 10px; align-items: center;
-    flex-wrap: wrap; margin-bottom: 14px;
-  }
-  .name-input {
-    flex: 1; min-width: 130px;
-    font-size: 14px; font-family: var(--font);
-    padding: 8px 12px; border-radius: var(--radius-md);
-    border: 1px solid var(--border-md);
-    background: var(--bg); color: var(--text);
-    outline: none;
-  }
+  .compose-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 28px; }
+  .compose-row1 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .name-input { flex: 1; min-width: 130px; font-size: 14px; font-family: var(--font); padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-md); background: var(--bg); color: var(--text); outline: none; }
   .name-input:focus { border-color: var(--text-muted); }
   .color-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
   .color-row { display: flex; gap: 7px; }
-  .color-dot {
-    width: 24px; height: 24px; border-radius: 50%;
-    cursor: pointer; border: 2.5px solid transparent;
-    transition: transform 0.15s, border-color 0.15s;
-  }
+  .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2.5px solid transparent; transition: transform 0.15s, border-color 0.15s; }
   .color-dot.active { transform: scale(1.2); }
 
-  /* ── 모드 탭 ── */
-  .mode-tabs {
-    display: flex; overflow: hidden;
-    border: 1px solid var(--border-md);
-    border-radius: var(--radius-md);
-    width: fit-content; margin-bottom: 14px;
-  }
-  .mode-tab {
-    padding: 7px 18px; font-size: 13px; font-family: var(--font);
-    background: transparent; border: none;
-    color: var(--text-muted); cursor: pointer; transition: all 0.15s;
-  }
-  .mode-tab.active {
-    background: var(--text); color: var(--bg);
-  }
+  .mode-tabs { display: flex; overflow: hidden; border: 1px solid var(--border-md); border-radius: var(--radius-md); width: fit-content; margin-bottom: 14px; }
+  .mode-tab { padding: 7px 18px; font-size: 13px; font-family: var(--font); background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+  .mode-tab.active { background: var(--text); color: var(--bg); }
 
-  /* ── 텍스트 입력 ── */
-  #text-area {
-    width: 100%; min-height: 100px; resize: vertical;
-    font-size: 14px; font-family: var(--font); line-height: 1.75;
-    padding: 10px 13px;
-    border: 1px solid var(--border-md); border-radius: var(--radius-md);
-    background: var(--bg); color: var(--text); outline: none;
-  }
+  #text-area { width: 100%; min-height: 100px; resize: vertical; font-size: 14px; font-family: var(--font); line-height: 1.75; padding: 10px 13px; border: 1px solid var(--border-md); border-radius: var(--radius-md); background: var(--bg); color: var(--text); outline: none; }
   #text-area:focus { border-color: var(--text-muted); }
 
-  /* ── 캔버스 ── */
-  #draw-canvas {
-    display: block; width: 100%; height: 170px;
-    border: 1px solid var(--border-md); border-radius: var(--radius-md);
-    cursor: crosshair; touch-action: none;
-  }
-  .canvas-btns {
-    display: flex; gap: 10px; align-items: center;
-    flex-wrap: wrap; margin-top: 8px;
-  }
-  .pen-row {
-    display: flex; align-items: center; gap: 8px; flex: 1; min-width: 160px;
-  }
+  #draw-canvas { display: block; width: 100%; height: 170px; border: 1px solid var(--border-md); border-radius: var(--radius-md); cursor: crosshair; touch-action: none; }
+  .canvas-btns { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  .pen-row { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 160px; }
   .pen-row label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
-  .pen-row input[type=range] {
-    flex: 1; accent-color: var(--text);
-  }
-  .pen-dot { display: flex; align-items: center; }
+  .pen-row input[type=range] { flex: 1; accent-color: var(--text); }
+  .submit-row { display: flex; justify-content: flex-end; margin-top: 16px; }
 
-  .submit-row {
-    display: flex; justify-content: flex-end; margin-top: 16px;
-  }
-
-  /* ── 보드 ── */
-  .board {
-    columns: 3; column-gap: 14px;
-  }
+  .board { columns: 3; column-gap: 14px; }
   @media (max-width: 640px) { .board { columns: 2; } }
   @media (max-width: 400px) { .board { columns: 1; } }
 
-  .card {
-    break-inside: avoid; border-radius: var(--radius-lg);
-    padding: 14px 14px 10px; margin-bottom: 14px;
-    position: relative; border: 1px solid transparent;
-    animation: popIn 0.28s ease;
-  }
-  @keyframes popIn {
-    from { opacity: 0; transform: scale(0.90) rotate(-1.5deg); }
-    to   { opacity: 1; transform: scale(1) rotate(0deg); }
-  }
-  .card-name {
-    font-size: 11px; font-weight: 600; margin-bottom: 7px; opacity: 0.65;
-    letter-spacing: 0.3px;
-  }
+  .card { break-inside: avoid; border-radius: var(--radius-lg); padding: 14px 14px 10px; margin-bottom: 14px; position: relative; border: 1px solid transparent; animation: popIn 0.28s ease; }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.90) rotate(-1.5deg); } to { opacity: 1; transform: scale(1) rotate(0deg); } }
+  .card-name { font-size: 11px; font-weight: 600; margin-bottom: 7px; opacity: 0.65; letter-spacing: 0.3px; }
   .card-text { font-size: 14px; line-height: 1.7; word-break: break-word; }
   .card-img { width: 100%; border-radius: 6px; display: block; }
   .card-time { font-size: 11px; opacity: 0.45; text-align: right; margin-top: 8px; }
-  .card-del {
-    position: absolute; top: 8px; right: 8px;
-    background: rgba(0,0,0,0.08); border: none;
-    border-radius: 50%; width: 22px; height: 22px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; opacity: 0; transition: opacity 0.15s; font-size: 12px;
-    color: inherit;
-  }
+  .card-del { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.08); border: none; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.15s; font-size: 12px; color: inherit; }
   .card:hover .card-del { opacity: 1; }
 
-  /* ── 빈 상태 ── */
-  .empty-state {
-    text-align: center; padding: 60px 20px;
-    color: var(--text-hint);
-  }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-hint); }
   .empty-state i { font-size: 40px; display: block; margin-bottom: 10px; }
   .empty-state p { font-size: 14px; }
 
-  /* ── 배지 ── */
-  .count-badge {
-    display: inline-block;
-    background: rgba(0,0,0,0.07); border-radius: 20px;
-    padding: 2px 10px; font-size: 12px;
-    color: var(--text-muted); margin-left: 8px;
-  }
-  @media (prefers-color-scheme: dark) {
-    .count-badge { background: rgba(255,255,255,0.1); }
-  }
+  .count-badge { display: inline-block; background: rgba(0,0,0,0.07); border-radius: 20px; padding: 2px 10px; font-size: 12px; color: var(--text-muted); margin-left: 8px; }
+  @media (prefers-color-scheme: dark) { .count-badge { background: rgba(255,255,255,0.1); } }
 
-  /* ── 토스트 ── */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--text); color: var(--bg);
-    padding: 9px 20px; border-radius: var(--radius-md);
-    font-size: 13px; font-family: var(--font);
-    opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 999;
-    white-space: nowrap;
-  }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 9px 20px; border-radius: var(--radius-md); font-size: 13px; font-family: var(--font); opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 999; white-space: nowrap; }
   .toast.show { opacity: 1; }
 
-  /* ── 수신자 설정 모달 ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4); z-index: 900;
-    align-items: center; justify-content: center;
-  }
+  /* 로딩 오버레이 */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 12px; }
+  .loading-overlay p { font-size: 14px; color: var(--text-muted); }
+  .spinner { width: 28px; height: 28px; border: 2.5px solid var(--border-md); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 설정 모달 */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 900; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface); border-radius: var(--radius-lg);
-    padding: 24px; width: min(360px, 90vw);
-    border: 1px solid var(--border-md);
-  }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; width: min(360px, 90vw); border: 1px solid var(--border-md); }
   .modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
   .modal label { font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 5px; }
-  .modal input {
-    width: 100%; font-size: 14px; font-family: var(--font);
-    padding: 8px 12px; border-radius: var(--radius-md);
-    border: 1px solid var(--border-md);
-    background: var(--bg); color: var(--text); outline: none;
-    margin-bottom: 16px;
-  }
+  .modal input { width: 100%; font-size: 14px; font-family: var(--font); padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-md); background: var(--bg); color: var(--text); outline: none; margin-bottom: 16px; }
   .modal input:focus { border-color: var(--text-muted); }
   .modal-btns { display: flex; justify-content: flex-end; gap: 8px; }
 
   @media print {
     body { background: #fff; padding: 0; }
-    .compose-card, .top-bar, .toast { display: none !important; }
+    .compose-card, .top-bar, .toast, .loading-overlay { display: none !important; }
     .board { columns: 3; }
     .card-del { display: none; }
     @page { size: A4 landscape; margin: 1.2cm; }
@@ -249,8 +114,13 @@
 </style>
 </head>
 <body>
-<div class="wrap">
 
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <p>데이터 불러오는 중...</p>
+</div>
+
+<div class="wrap">
   <div class="top-bar">
     <div class="title-wrap">
       <h1 id="page-title">롤링페이퍼 <span class="count-badge" id="count-badge">0개</span></h1>
@@ -269,16 +139,13 @@
       <span class="color-label">카드 색</span>
       <div class="color-row" id="color-row"></div>
     </div>
-
     <div class="mode-tabs">
       <button class="mode-tab active" id="tab-text" onclick="switchMode('text')">자판 입력</button>
       <button class="mode-tab" id="tab-draw" onclick="switchMode('draw')">손글씨</button>
     </div>
-
     <div id="text-mode">
       <textarea id="text-area" placeholder="따뜻한 메시지를 남겨보세요..."></textarea>
     </div>
-
     <div id="draw-mode" style="display:none">
       <canvas id="draw-canvas" width="840" height="170"></canvas>
       <div class="canvas-btns">
@@ -286,11 +153,10 @@
         <div class="pen-row">
           <label>굵기</label>
           <input type="range" id="pen-size" min="1" max="14" value="3" step="1" oninput="updatePen()" />
-          <div class="pen-dot" id="pen-dot"></div>
+          <div id="pen-dot"></div>
         </div>
       </div>
     </div>
-
     <div class="submit-row">
       <button class="btn btn-primary" onclick="submitCard()">
         <i class="ti ti-send"></i> 카드 붙이기
@@ -299,14 +165,12 @@
   </div>
 
   <div class="board" id="board"></div>
-  <div class="empty-state" id="empty-state">
+  <div class="empty-state" id="empty-state" style="display:none">
     <i class="ti ti-mail-heart"></i>
     <p>아직 카드가 없어요. 첫 번째 메시지를 남겨보세요!</p>
   </div>
-
 </div>
 
-<!-- 설정 모달 -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <h2>페이지 설정</h2>
@@ -323,6 +187,45 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onValue, remove, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBsQFx47FHyKEXLQR0HojXXMFS4OmDbJ7c",
+  authDomain: "rolling-paper-75a8e.firebaseapp.com",
+  databaseURL: "https://rolling-paper-75a8e-default-rtdb.firebaseio.com",
+  projectId: "rolling-paper-75a8e",
+  storageBucket: "rolling-paper-75a8e.firebasestorage.app",
+  messagingSenderId: "779877286803",
+  appId: "1:779877286803:web:bce73ebbcd663d1e219e66"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const cardsRef = ref(db, 'cards');
+
+window._fbPush = (data) => push(cardsRef, data);
+window._fbRemove = (id) => remove(ref(db, 'cards/' + id));
+window._fbClearAll = async () => {
+  const snap = await get(cardsRef);
+  if (snap.exists()) {
+    const promises = [];
+    snap.forEach(child => promises.push(remove(ref(db, 'cards/' + child.key))));
+    await Promise.all(promises);
+  }
+};
+
+onValue(cardsRef, (snap) => {
+  const items = [];
+  snap.forEach(child => items.push({ id: child.key, ...child.val() }));
+  items.reverse();
+  window._renderCards(items);
+  document.getElementById('loading-overlay').style.display = 'none';
+});
+</script>
+
 <script>
 const CARD_COLORS = [
   { bg:'#FEF3C7', text:'#92400E', border:'#FDE68A' },
@@ -332,47 +235,60 @@ const CARD_COLORS = [
   { bg:'#EDE9FE', text:'#5B21B6', border:'#DDD6FE' },
   { bg:'#FFE4E6', text:'#9F1239', border:'#FECDD3' },
 ];
-
-const STORAGE_KEY = 'rolling_paper_v2';
 const SETTINGS_KEY = 'rolling_paper_settings_v2';
 
-let cards = [];
 let selectedColor = 0;
 let currentMode = 'text';
 let isDrawing = false;
 let lastX = 0, lastY = 0;
-let penColor = CARD_COLORS[0].text;
 let penSize = 3;
 let ctx = null;
 
-/* ── 초기화 ── */
-function init() {
-  loadSettings();
-  loadCards();
-  buildColorRow();
-  setupCanvas();
-}
+/* ── 렌더링 (Firebase onValue 콜백에서 호출) ── */
+window._renderCards = function(items) {
+  const board = document.getElementById('board');
+  const empty = document.getElementById('empty-state');
+  document.getElementById('count-badge').textContent = items.length + '개';
 
-/* ── 색상 선택 ── */
+  if (items.length === 0) {
+    board.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  board.innerHTML = items.map((card, i) => {
+    const rot = ((i * 7 + 2) % 9 - 4) * 0.7;
+    const inner = card.type === 'text'
+      ? `<div class="card-text">${esc(card.text).replace(/\n/g,'<br>')}</div>`
+      : `<img class="card-img" src="${card.dataURL}" alt="${esc(card.name)}의 손글씨" />`;
+    return `
+      <div class="card" style="background:${card.color.bg};color:${card.color.text};border-color:${card.color.border};transform:rotate(${rot}deg)">
+        <button class="card-del" onclick="deleteCard('${card.id}')" aria-label="카드 삭제" style="color:${card.color.text}"><i class="ti ti-x"></i></button>
+        <div class="card-name">${esc(card.name)}</div>
+        ${inner}
+        <div class="card-time">${card.time}</div>
+      </div>`;
+  }).join('');
+};
+
+/* ── 색상 ── */
 function buildColorRow() {
   const row = document.getElementById('color-row');
-  row.innerHTML = '';
   CARD_COLORS.forEach((c, i) => {
     const d = document.createElement('div');
-    d.className = 'color-dot' + (i === selectedColor ? ' active' : '');
+    d.className = 'color-dot' + (i === 0 ? ' active' : '');
     d.style.background = c.bg;
-    d.style.borderColor = i === selectedColor ? c.text : 'transparent';
+    d.style.borderColor = i === 0 ? c.text : 'transparent';
     d.onclick = () => {
       selectedColor = i;
       document.querySelectorAll('.color-dot').forEach((el, j) => {
         el.classList.toggle('active', j === i);
         el.style.borderColor = j === i ? CARD_COLORS[j].text : 'transparent';
       });
-      penColor = CARD_COLORS[i].text;
       if (ctx) {
-        ctx.strokeStyle = penColor;
-        const canvas = document.getElementById('draw-canvas');
-        canvas.style.background = CARD_COLORS[i].bg;
+        ctx.strokeStyle = CARD_COLORS[i].text;
+        document.getElementById('draw-canvas').style.background = CARD_COLORS[i].bg;
       }
       updatePenDot();
     };
@@ -406,18 +322,15 @@ function setupCanvas() {
 
   canvas.addEventListener('mousedown',  (e) => { isDrawing = true; [lastX, lastY] = getPos(e); });
   canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isDrawing = true; [lastX, lastY] = getPos(e); }, { passive: false });
-  canvas.addEventListener('mousemove',  (e) => { if (!isDrawing) return; draw(getPos(e)); });
-  canvas.addEventListener('touchmove',  (e) => { e.preventDefault(); if (!isDrawing) return; draw(getPos(e)); }, { passive: false });
+  canvas.addEventListener('mousemove',  (e) => { if (!isDrawing) return; drawLine(getPos(e)); });
+  canvas.addEventListener('touchmove',  (e) => { e.preventDefault(); if (!isDrawing) return; drawLine(getPos(e)); }, { passive: false });
   canvas.addEventListener('mouseup',    () => isDrawing = false);
   canvas.addEventListener('touchend',   () => isDrawing = false);
   canvas.addEventListener('mouseleave', () => isDrawing = false);
 }
 
-function draw([x, y]) {
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(x, y);
-  ctx.stroke();
+function drawLine([x, y]) {
+  ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
   [lastX, lastY] = [x, y];
 }
 
@@ -430,7 +343,6 @@ function resetCanvas() {
   ctx.lineWidth = penSize;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  penColor = c.text;
   updatePenDot();
 }
 
@@ -443,20 +355,23 @@ function updatePen() {
 }
 
 function updatePenDot() {
-  const dot = document.getElementById('pen-dot');
+  const c = CARD_COLORS[selectedColor];
   const r = Math.max(3, penSize / 2 + 1);
-  dot.innerHTML = `<svg width="28" height="20" style="display:block"><circle cx="14" cy="10" r="${r}" fill="${penColor}"/></svg>`;
+  document.getElementById('pen-dot').innerHTML =
+    `<svg width="28" height="20" style="display:block"><circle cx="14" cy="10" r="${r}" fill="${c.text}"/></svg>`;
 }
 
 /* ── 카드 제출 ── */
-function submitCard() {
+async function submitCard() {
+  if (!window._fbPush) { showToast('Firebase 연결 중이에요. 잠시 후 다시 시도해주세요.'); return; }
   const name = document.getElementById('name-input').value.trim() || '익명';
   const c = CARD_COLORS[selectedColor];
 
+  let cardData;
   if (currentMode === 'text') {
     const text = document.getElementById('text-area').value.trim();
     if (!text) { showToast('메시지를 입력해주세요'); return; }
-    pushCard({ type:'text', name, text, color:c, time: nowStr() });
+    cardData = { type:'text', name, text, color:c, time: nowStr() };
     document.getElementById('text-area').value = '';
   } else {
     const canvas = document.getElementById('draw-canvas');
@@ -466,73 +381,42 @@ function submitCard() {
     fc.fillStyle = c.bg;
     fc.fillRect(0, 0, flat.width, flat.height);
     fc.drawImage(canvas, 0, 0);
-    pushCard({ type:'draw', name, dataURL: flat.toDataURL('image/png'), color:c, time: nowStr() });
+    cardData = { type:'draw', name, dataURL: flat.toDataURL('image/png'), color:c, time: nowStr() };
     resetCanvas();
   }
-}
 
-function pushCard(card) {
-  cards.unshift(card);
-  saveCards();
-  renderBoard();
-  showToast('카드가 붙여졌어요!');
-}
-
-function deleteCard(i) {
-  if (!confirm('이 카드를 삭제할까요?')) return;
-  cards.splice(i, 1);
-  saveCards();
-  renderBoard();
-  showToast('카드가 삭제됐어요');
-}
-
-function confirmClear() {
-  if (cards.length === 0) return;
-  if (!confirm('모든 카드를 삭제할까요? 되돌릴 수 없어요.')) return;
-  cards = [];
-  saveCards();
-  renderBoard();
-  showToast('전체 삭제됐어요');
-}
-
-/* ── 렌더링 ── */
-function renderBoard() {
-  const board = document.getElementById('board');
-  const empty = document.getElementById('empty-state');
-  document.getElementById('count-badge').textContent = cards.length + '개';
-
-  if (cards.length === 0) {
-    board.innerHTML = '';
-    empty.style.display = '';
-    return;
+  try {
+    await window._fbPush(cardData);
+    showToast('카드가 붙여졌어요!');
+  } catch(e) {
+    showToast('저장 실패. 다시 시도해주세요.');
   }
-  empty.style.display = 'none';
+}
 
-  board.innerHTML = cards.map((card, i) => {
-    const rot = ((i * 7 + 2) % 9 - 4) * 0.7;
-    const inner = card.type === 'text'
-      ? `<div class="card-text">${esc(card.text).replace(/\n/g,'<br>')}</div>`
-      : `<img class="card-img" src="${card.dataURL}" alt="${esc(card.name)}의 손글씨" />`;
-    return `
-      <div class="card" style="background:${card.color.bg};color:${card.color.text};border-color:${card.color.border};transform:rotate(${rot}deg)">
-        <button class="card-del" onclick="deleteCard(${i})" aria-label="카드 삭제" style="color:${card.color.text}"><i class="ti ti-x"></i></button>
-        <div class="card-name">${esc(card.name)}</div>
-        ${inner}
-        <div class="card-time">${card.time}</div>
-      </div>`;
-  }).join('');
+async function deleteCard(id) {
+  if (!confirm('이 카드를 삭제할까요?')) return;
+  try {
+    await window._fbRemove(id);
+    showToast('카드가 삭제됐어요');
+  } catch(e) { showToast('삭제 실패'); }
+}
+
+async function confirmClear() {
+  if (!confirm('모든 카드를 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await window._fbClearAll();
+    showToast('전체 삭제됐어요');
+  } catch(e) { showToast('삭제 실패'); }
 }
 
 /* ── 설정 ── */
 function openSettings() {
-  const s = loadSettingsData();
+  const s = getSettings();
   document.getElementById('set-receiver').value = s.receiver || '';
   document.getElementById('set-subtitle').value = s.subtitle || '';
   document.getElementById('modal').classList.add('open');
 }
-function closeSettings() {
-  document.getElementById('modal').classList.remove('open');
-}
+function closeSettings() { document.getElementById('modal').classList.remove('open'); }
 function saveSettings() {
   const receiver = document.getElementById('set-receiver').value.trim();
   const subtitle = document.getElementById('set-subtitle').value.trim();
@@ -541,30 +425,15 @@ function saveSettings() {
   closeSettings();
   showToast('설정이 저장됐어요');
 }
-function loadSettings() {
-  applySettings(loadSettingsData());
-}
-function loadSettingsData() {
+function getSettings() {
   try { return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch(e) { return {}; }
 }
 function applySettings({ receiver, subtitle }) {
-  const h1 = document.getElementById('page-title');
-  const badge = document.getElementById('count-badge');
-  h1.innerHTML = (receiver ? `${receiver}에게 <span class="count-badge" id="count-badge">0개</span>` : `롤링페이퍼 <span class="count-badge" id="count-badge">0개</span>`);
-  document.getElementById('count-badge').textContent = cards.length + '개';
+  const cnt = document.getElementById('count-badge') ? document.getElementById('count-badge').textContent : '0개';
+  document.getElementById('page-title').innerHTML =
+    (receiver ? `${receiver}에게 ` : '롤링페이퍼 ') +
+    `<span class="count-badge" id="count-badge">${cnt}</span>`;
   document.getElementById('page-sub').textContent = subtitle || '따뜻한 메시지를 카드에 남겨보세요';
-}
-
-/* ── 로컬스토리지 ── */
-function saveCards() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cards)); } catch(e) {}
-}
-function loadCards() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) cards = JSON.parse(raw);
-  } catch(e) { cards = []; }
-  renderBoard();
 }
 
 /* ── 유틸 ── */
@@ -582,12 +451,15 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-/* 모달 바깥 클릭 닫기 */
 document.getElementById('modal').addEventListener('click', function(e) {
   if (e.target === this) closeSettings();
 });
 
-init();
+buildColorRow();
+setupCanvas();
+applySettings(getSettings());
 </script>
 </body>
 </html>
+HTMLEOF
+echo "done"
