@@ -207,10 +207,16 @@ onValue(cardsRef, (snap) => {
   const items = [];
   snap.forEach(child => items.push({ id: child.key, ...child.val() }));
   items.reverse();
-  if (typeof window._renderCards === 'function') {
-    window._renderCards(items);
-  }
-  document.getElementById('loading-overlay').style.display = 'none';
+  // _renderCards가 로드될 때까지 대기
+  const tryRender = () => {
+    if (typeof window._renderCards === 'function') {
+      window._renderCards(items);
+      document.getElementById('loading-overlay').style.display = 'none';
+    } else {
+      setTimeout(tryRender, 50);
+    }
+  };
+  tryRender();
 });
 </script>
 
