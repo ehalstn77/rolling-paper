@@ -110,7 +110,9 @@
     animation: fadeIn 0.4s ease-out !important; 
     overflow: visible !important;
     flex-shrink: 0 !important;
-  }
+   transform-origin: center;
+   contain: layout paint;
+}
   
   @keyframes fadeIn { 
     from { opacity: 0; transform: scale(0.9); } 
