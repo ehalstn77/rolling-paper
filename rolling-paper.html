@@ -543,50 +543,78 @@ function printBoard() {
     const clone = card.cloneNode(true);
     const del = clone.querySelector('.card-del');
     if (del) del.remove();
-    clone.style.transform = 'none';
-    clone.style.marginBottom = '15px';
+    // 💡 원래 있던 clone.style.transform = 'none'; 을 삭제하여 삐뚤어진 각도 유지!
+    clone.style.marginBottom = '20px';
     clone.style.breakInside = 'avoid';
     return clone.outerHTML;
   }).join('');
 
-  const win = window.open('', '_blank', 'width=1000,height=700');
+  const win = window.open('', '_blank', 'width=1200,height=800');
   const receiver = document.getElementById('page-title').textContent.replace(/\d+개/,'').trim();
   const subtitle = document.getElementById('page-sub').textContent;
+  
   win.document.write(`<!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8"/>
-<title>롤링페이퍼 인쇄</title>
+<title>롤링페이퍼 대형 인쇄</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; padding: 20px; }
-  h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
-  p { font-size: 13px; color: #666; margin-bottom: 20px; }
-  .board { display: flex; flex-wrap: wrap; gap: 15px; }
-  .card { width: 250px; border-radius: 4px; padding: 20px; border: 1px solid #eee; break-inside: avoid; position: relative; overflow: visible; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
-  .card::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; background-color: #E53935; border-radius: 50%; }
-  .card-name { font-size: 13px; font-weight: 700; margin-bottom: 10px; opacity: 0.8; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 4px; }
-  .card-text { font-size: 14px; line-height: 1.6; word-break: break-word; }
-  .card-img { width: 100%; border-radius: 4px; display: block; margin-top: 5px; }
-  .card-time { font-size: 11px; opacity: 0.5; text-align: right; margin-top: 15px; }
-  @page { size: A4 landscape; margin: 1.2cm; }
-  @media print { body { padding: 0; } }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+    padding: 60px; 
+    /* 💡 배경색과 패턴을 인쇄 시에도 강제로 나오게 하는 핵심 마법 주문 */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    
+    background-color: #d2b48c; /* 코르크 보드 색상 */
+    background-image:
+      radial-gradient(#bc9a7c 10%, transparent 11%),
+      radial-gradient(#bc9a7c 10%, transparent 11%);
+    background-size: 10px 10px;
+    background-position: 0 0, 5px 5px;
+  }
+  
+  /* 제목 부분 스타일 */
+  .header-wrap { text-align: center; margin-bottom: 50px; }
+  h1 { font-size: 40px; font-weight: 700; margin-bottom: 10px; color: #1a1a1a; background: rgba(255,255,255,0.8); display: inline-block; padding: 15px 30px; border-radius: 15px; }
+  p { font-size: 20px; color: #444; background: rgba(255,255,255,0.8); display: inline-block; padding: 8px 20px; border-radius: 10px; margin-top: 10px; }
+  
+  /* 카드 정렬 (50장이 예쁘게 퍼지도록) */
+  .board { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; align-items: flex-start; }
+  
+  /* 포스트잇 카드 스타일 (화면과 100% 동일) */
+  .card { 
+    display: flex; flex-direction: column; width: 280px; min-height: 280px; 
+    position: relative; border-radius: 4px; padding: 24px 20px 20px; border: none; 
+    box-shadow: 3px 6px 15px rgba(0,0,0,0.3) !important; 
+    break-inside: avoid; flex-shrink: 0; 
+  }
+  
+  /* 핀 모양 유지 */
+  .card::before { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; background-color: #E53935; border-radius: 50%; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3), 2px 2px 4px rgba(0,0,0,0.4); z-index: 2; }
+  .card::after { content: ''; position: absolute; top: -3px; left: 50%; transform: translateX(-50%) rotate(30deg); width: 2px; height: 14px; background-color: #777; z-index: 1; box-shadow: 1px 1px 1px rgba(0,0,0,0.2); }
+  
+  .card-name { font-size: 16px; font-weight: 700; margin-bottom: 15px; opacity: 0.8; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 6px; }
+  .card-text { font-size: 18px; line-height: 1.6; word-break: break-word; flex: 1; }
+  .card-img { width: 100%; border-radius: 4px; display: block; margin-top: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .card-time { font-size: 13px; opacity: 0.5; text-align: right; margin-top: 20px; }
+  
+  /* 💡 인쇄 용지 사이즈 설정 (A0 가로 방향) */
+  /* A1으로 변경하고 싶다면 size: A1 landscape; 로 수정하세요 */
+  @page { size: A0 landscape; margin: 3cm; }
 </style>
 </head><body>
-<h1>${receiver}</h1>
-<p>${subtitle}</p>
+<div class="header-wrap">
+  <h1>${receiver}</h1><br>
+  <p>${subtitle}</p>
+</div>
 <div class="board">${rows}</div>
-<script>window.onload = () => { window.print(); }<\/script>
+<script>
+  window.onload = () => { 
+    // 브라우저가 배경 이미지를 렌더링할 시간을 0.5초 준 뒤 인쇄창 띄우기
+    setTimeout(() => { window.print(); }, 500); 
+  }
+<\/script>
 </body></html>`);
   win.document.close();
 }
-
-document.getElementById('modal').addEventListener('click', function(e) {
-  if (e.target === this) closeSettings();
-});
-
-buildColorRow();
-setupCanvas();
-applySettings(getSettings());
-</script>
-</body>
-</html>
