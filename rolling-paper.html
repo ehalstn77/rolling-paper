@@ -88,31 +88,32 @@
   .pen-row input[type=range] { flex: 1; accent-color: var(--text); }
   .submit-row { display: flex; justify-content: flex-end; margin-top: 16px; }
 
-  /* --- 포스트잇 게시판 스타일 --- */
- .board { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-    gap: 28px; 
-    padding: 30px 20px;
-    align-items: start;
-    justify-items: center; 
-  }
+/* --- 포스트잇 게시판 스타일 (절대 안 겹치게 강제) --- */
+.board { 
+  display: grid !important; 
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important; 
+  gap: 25px !important; 
+  padding: 30px 20px !important;
+  align-items: start !important;
+  justify-items: center !important;
+}
 
-  /* --- 포스트잇 카드 스타일 --- */
-  .card { 
-    display: flex;
-    flex-direction: column;
-    width: 100%; 
-    max-width: 270px; /* 카드가 너무 커지지 않게 고정 */
-    min-height: 250px; 
-    border-radius: 2px; 
-    padding: 24px 20px 20px; 
-    position: relative; 
-    border: none; 
-    box-shadow: 3px 4px 10px rgba(0,0,0,0.3); 
-    animation: popIn 0.3s ease-out; 
-    overflow: visible;
-  }
+/* --- 포스트잇 카드 스타일 --- */
+.card { 
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important; 
+  max-width: 270px !important; 
+  min-height: 250px !important; 
+  margin: 0 !important; /* 외부 여백 완전 초기화 */
+  position: relative !important; /* 겹침의 주원인 강제 차단 */
+  border-radius: 2px; 
+  padding: 24px 20px 20px; 
+  border: none; 
+  box-shadow: 3px 4px 10px rgba(0,0,0,0.3); 
+  animation: popIn 0.3s ease-out; 
+  overflow: visible;
+}
   
   @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   
