@@ -135,7 +135,9 @@ textarea{width:min(440px,100%);height:440px;resize:none;font-size:22px;font-fami
     <div id="mdraw" style="display:none">
       <canvas id="cvs" width="440" height="440"></canvas>
       <div class="cbtns">
-        <button class="btn" onclick="clearCvs()"><i class="ti ti-eraser"></i> 지우기</button>
+        <button class="btn" id="btn-pen" onclick="setPenMode('pen')"><i class="ti ti-pencil"></i> 펜</button>
+        <button class="btn" id="btn-eraser" onclick="setPenMode('eraser')"><i class="ti ti-eraser"></i> 지우개</button>
+        <button class="btn" onclick="clearCvs()"><i class="ti ti-trash"></i> 전체 지우기</button>
         <div class="penrow">
           <label>굵기</label>
           <input type="range" id="psize" min="1" max="14" value="3" oninput="updPen()">
@@ -177,7 +179,7 @@ const COLORS=[
   {bg:'#E0FFFF',text:'#333'},{bg:'#E6E6FA',text:'#333'},
 ];
 const SK='rp_settings_v3';
-let ci=0,mode='text',drawing=false,lx=0,ly=0,ps=3,ctx=null;
+let ci=0,mode='text',drawing=false,lx=0,ly=0,ps=3,ctx=null,penMode='pen';
 let db=null,cardsRef=null;
 
 // Firebase 초기화
@@ -268,8 +270,29 @@ function resetCvs(){
   document.getElementById('ta').style.background=COLORS[ci].bg;
   document.getElementById('ta').style.color=COLORS[ci].text;
   ctx.clearRect(0,0,c.width,c.height);
+  ctx.globalCompositeOperation='source-over';
   ctx.strokeStyle=COLORS[ci].text;ctx.lineWidth=ps;ctx.lineCap='round';ctx.lineJoin='round';
+  penMode='pen';
+  if(document.getElementById('btn-pen')){
+    document.getElementById('btn-pen').classList.add('btn-p');
+    document.getElementById('btn-eraser').classList.remove('btn-p');
+  }
   updDot();
+}
+function setPenMode(m){
+  penMode=m;
+  document.getElementById('btn-pen').classList.toggle('btn-p', m==='pen');
+  document.getElementById('btn-eraser').classList.toggle('btn-p', m==='eraser');
+  if(ctx){
+    if(m==='eraser'){
+      ctx.globalCompositeOperation='destination-out';
+      ctx.lineWidth=ps*3;
+    } else {
+      ctx.globalCompositeOperation='source-over';
+      ctx.strokeStyle=COLORS[ci].text;
+      ctx.lineWidth=ps;
+    }
+  }
 }
 function clearCvs(){resetCvs();}
 function updPen(){ps=parseInt(document.getElementById('psize').value);if(ctx)ctx.lineWidth=ps;updDot();}
