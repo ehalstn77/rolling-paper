@@ -42,10 +42,10 @@ body{font-family:var(--font);color:var(--text);min-height:100vh;padding:24px 16p
 .tabs{display:flex;overflow:hidden;border:1px solid var(--border-md);border-radius:var(--r-md);width:fit-content;margin-bottom:14px}
 .tab{padding:7px 18px;font-size:13px;font-family:var(--font);background:transparent;border:none;color:var(--muted);cursor:pointer}
 .tab.on{background:var(--text);color:#fff}
-textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:var(--font);
-  line-height:1.75;padding:10px 13px;border:1px solid var(--border-md);border-radius:var(--r-md);
-  background:var(--bg);color:var(--text);outline:none}
-#cvs{display:block;width:220px;height:220px;border:1px solid var(--border-md);
+textarea{width:440px;height:440px;resize:none;font-size:14px;font-family:var(--font);
+  line-height:1.75;padding:16px;border:1px solid var(--border-md);border-radius:var(--r-md);
+  background:#FFFD82;color:#333;outline:none;display:block}
+#cvs{display:block;width:440px;height:440px;border:1px solid var(--border-md);
   border-radius:var(--r-md);cursor:crosshair;touch-action:none;background:#FFFD82}
 .cbtns{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .penrow{display:flex;align-items:center;gap:8px;flex:1;min-width:160px}
@@ -130,7 +130,7 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
     </div>
     <div id="mtext"><textarea id="ta" placeholder="따뜻한 메시지를 남겨보세요..."></textarea></div>
     <div id="mdraw" style="display:none">
-      <canvas id="cvs" width="220" height="220"></canvas>
+      <canvas id="cvs" width="440" height="440"></canvas>
       <div class="cbtns">
         <button class="btn" onclick="clearCvs()"><i class="ti ti-eraser"></i> 지우기</button>
         <div class="penrow">
@@ -221,6 +221,8 @@ snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82'
         el.style.borderColor=j===i?'#333':'transparent';
       });
       if(ctx){ctx.strokeStyle=COLORS[i].text;document.getElementById('cvs').style.background=COLORS[i].bg;}
+      document.getElementById('ta').style.background=COLORS[i].bg;
+      document.getElementById('ta').style.color=COLORS[i].text;
       updDot();
     };
     row.appendChild(d);
@@ -230,8 +232,8 @@ snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82'
 // 캔버스
 function initCvs(){
   const c=document.getElementById('cvs');
-  // 캔버스 고정 크기 (포스트잇과 동일)
-  c.width=220;c.height=220;
+  // 캔버스 고정 크기 (포스트잇 2배)
+  c.width=440;c.height=440;
   ctx=c.getContext('2d');
   resetCvs();
   const gp=e=>{
@@ -250,6 +252,8 @@ function initCvs(){
 function resetCvs(){
   const c=document.getElementById('cvs');
   c.style.background=COLORS[ci].bg;
+  document.getElementById('ta').style.background=COLORS[ci].bg;
+  document.getElementById('ta').style.color=COLORS[ci].text;
   ctx.clearRect(0,0,c.width,c.height);
   ctx.strokeStyle=COLORS[ci].text;ctx.lineWidth=ps;ctx.lineCap='round';ctx.lineJoin='round';
   updDot();
