@@ -53,10 +53,10 @@ textarea{width:min(440px,100%);height:440px;resize:none;font-size:22px;font-fami
 .penrow input[type=range]{flex:1}
 .subrow{display:flex;justify-content:flex-end;margin-top:16px}
 .board{display:flex;flex-wrap:wrap;gap:50px 30px;padding:50px 10px;align-items:flex-start}
-.card{width:220px;min-height:220px;flex-shrink:0;flex-grow:0;
+.card{width:220px;height:280px;flex-shrink:0;flex-grow:0;
   display:flex;flex-direction:column;
   position:relative;border-radius:4px;padding:22px 18px 16px;
-  box-shadow:3px 5px 12px rgba(0,0,0,.25)}
+  box-shadow:3px 5px 12px rgba(0,0,0,.25);overflow:hidden}
 .pin{position:absolute;top:-10px;left:50%;transform:translateX(-50%);
   width:16px;height:16px;background:#E53935;border-radius:50%;
   box-shadow:inset -2px -2px 4px rgba(0,0,0,.3),2px 2px 4px rgba(0,0,0,.4);z-index:2}
@@ -213,7 +213,7 @@ db.ref('settings').on('value',(snap)=>{
 cardsRef.on('value',(snap)=>{
   clearTimeout(loadT);
   const items=[];
-snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82',text:'#333'},name:c.val().name,text:c.val().text,dataURL:c.val().dataURL,type:c.val().type,time:c.val().time});});
+  snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82',text:'#333'},name:c.val().name,text:c.val().text,dataURL:c.val().dataURL,type:c.val().type,time:c.val().time});});
   items.reverse();
   renderCards(items);
   document.getElementById('loading').style.display='none';
@@ -302,7 +302,7 @@ function renderCards(items){
     el.className='card';
     el.style.cssText=`background:${card.color.bg};color:${card.color.text};transform:rotate(${rot}deg);width:220px;min-height:220px;flex-shrink:0;flex-grow:0;display:flex;flex-direction:column;position:relative;border-radius:4px;padding:22px 18px 16px;box-shadow:3px 5px 12px rgba(0,0,0,.25);`;
     const inner=card.type==='text'
-      ?`<div class="ctext" style="font-size:18px;line-height:1.5;">${esc(card.text).replace(/\n/g,'<br>')}</div>`
+      ?`<div class="ctext" style="font-size:15px;line-height:1.6;">${esc(card.text).replace(/\n/g,'<br>')}</div>`
       :`<img class="cimg" src="${card.dataURL}" alt="손글씨">`;
     el.innerHTML=`
       <div class="pin"></div>
