@@ -201,7 +201,7 @@ const loadT=setTimeout(()=>{
 cardsRef.on('value',(snap)=>{
   clearTimeout(loadT);
   const items=[];
-  snap.forEach(c=>items.push({id:c.key,...c.val()}));
+ snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82',text:'#333'},name:c.val().name,text:c.val().text,dataURL:c.val().dataURL,type:c.val().type,time:c.val().time});});
   items.reverse();
   renderCards(items);
   document.getElementById('loading').style.display='none';
