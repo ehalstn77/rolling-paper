@@ -67,9 +67,9 @@ textarea{width:min(440px,100%);height:440px;resize:none;font-size:22px;font-fami
 .ctext{font-size:14px;line-height:1.65;word-break:break-word;flex:1}
 .cimg{width:100%;border-radius:4px;display:block}
 .ctime{font-size:11px;opacity:.45;text-align:right;margin-top:12px}
-.cdel{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.1);border:none;
+.cdel{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.15);border:none;
   border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;opacity:0;transition:opacity .15s;font-size:12px;z-index:3}
+  cursor:pointer;opacity:0.4;transition:opacity .15s;font-size:12px;z-index:3}
 .card:hover .cdel{opacity:1}
 .empty{text-align:center;padding:60px 20px;color:#fff;font-size:14px;font-weight:500}
 .empty i{font-size:40px;display:block;margin-bottom:10px}
@@ -121,6 +121,7 @@ textarea{width:min(440px,100%);height:440px;resize:none;font-size:22px;font-fami
   <div class="compose">
     <div class="row1">
       <input class="name-in" id="nin" placeholder="이름 또는 닉네임" maxlength="20">
+      <input class="name-in" id="cpw" placeholder="개인 비밀번호 (수정/삭제용)" maxlength="20" type="password">
       <span class="clabel">포스트잇 색</span>
       <div class="cdots" id="cdots"></div>
     </div>
@@ -218,7 +219,7 @@ db.ref('settings').on('value',(snap)=>{
 cardsRef.on('value',(snap)=>{
   clearTimeout(loadT);
   const items=[];
-  snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82',text:'#333'},name:c.val().name,text:c.val().text,dataURL:c.val().dataURL,type:c.val().type,time:c.val().time});});
+  snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82',text:'#333'},name:c.val().name,text:c.val().text,dataURL:c.val().dataURL,type:c.val().type,time:c.val().time,pw:c.val().pw||''});});
   items.reverse();
   renderCards(items);
   document.getElementById('loading').style.display='none';
@@ -367,7 +368,7 @@ function renderCards(items){
       :`<img class="cimg" src="${card.dataURL}" alt="손글씨" style="transform:scale(1.15);transform-origin:top left;width:87%;">`;
     el.innerHTML=`
       <div class="pin"></div>
-      <button class="cdel" onclick="delCard('${card.id}')" style="color:${card.color.text}"><i class="ti ti-x"></i></button>
+      <button class="cdel" onclick="delCard('${card.id}','${card.pw||''}')" style="color:${card.color.text}"><i class="ti ti-x"></i></button>
       <div class="cname">${esc(card.name)}</div>
       ${inner}
       <div class="ctime">${card.time}</div>`;
@@ -379,10 +380,11 @@ function renderCards(items){
 function doSubmit(){
   const name=document.getElementById('nin').value.trim()||'익명';
   const c=COLORS[ci];
+  const cpw=document.getElementById('cpw').value.trim();
   if(mode==='text'){
     const t=document.getElementById('ta').value.trim();
     if(!t){toast('메시지를 입력해주세요');return;}
-    cardsRef.push({type:'text',name,text:t,color:c,time:now()})
+    cardsRef.push({type:'text',name,text:t,color:c,time:now(),pw:cpw})
       .then(()=>toast('보드에 꽂혔어요!'))
       .catch(()=>toast('저장 실패. 다시 시도해주세요.'));
     document.getElementById('ta').value='';
@@ -392,19 +394,24 @@ function doSubmit(){
     f.width=cvs.width;f.height=cvs.height;
     const fc=f.getContext('2d');
     fc.fillStyle=c.bg;fc.fillRect(0,0,f.width,f.height);fc.drawImage(cvs,0,0);
-    cardsRef.push({type:'draw',name,dataURL:f.toDataURL('image/png'),color:c,time:now()})
+    cardsRef.push({type:'draw',name,dataURL:f.toDataURL('image/png'),color:c,time:now(),pw:cpw})
       .then(()=>toast('보드에 꽂혔어요!'))
       .catch(()=>toast('저장 실패. 다시 시도해주세요.'));
     resetCvs();
   }
 }
 
-function delCard(id){
-  if(!checkPw()){alert('비밀번호가 틀렸어요');return;}
-  if(!confirm('이 카드를 삭제할까요?'))return;
-  db.ref('cards/'+id).remove()
-    .then(()=>toast('삭제됐어요'))
-    .catch(()=>toast('삭제 실패'));
+function delCard(id,pw){
+  const input=prompt('비밀번호를 입력하세요\n(작성 시 설정한 개인 비밀번호 또는 관리자 비밀번호)');
+  if(input===null)return;
+  if(input==='361377'||(pw&&input===pw)||(pw===''&&input==='')){
+    if(!confirm('이 카드를 삭제할까요?'))return;
+    db.ref('cards/'+id).remove()
+      .then(()=>toast('삭제됐어요'))
+      .catch(()=>toast('삭제 실패'));
+  } else {
+    toast('비밀번호가 틀렸어요');
+  }
 }
 function doClear(){
   if(!checkPw()){alert('비밀번호가 틀렸어요');return;}
