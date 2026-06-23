@@ -53,10 +53,10 @@ textarea{width:min(440px,100%);height:440px;resize:none;font-size:22px;font-fami
 .penrow input[type=range]{flex:1}
 .subrow{display:flex;justify-content:flex-end;margin-top:16px}
 .board{display:flex;flex-wrap:wrap;gap:50px 30px;padding:50px 10px;align-items:flex-start}
-.card{width:220px;height:280px;flex-shrink:0;flex-grow:0;
+.card{width:220px;min-height:220px;flex-shrink:0;flex-grow:0;
   display:flex;flex-direction:column;
   position:relative;border-radius:4px;padding:22px 18px 16px;
-  box-shadow:3px 5px 12px rgba(0,0,0,.25);overflow:hidden}
+  box-shadow:3px 5px 12px rgba(0,0,0,.25);overflow:visible;margin-top:14px}
 .pin{position:absolute;top:-10px;left:50%;transform:translateX(-50%);
   width:16px;height:16px;background:#E53935;border-radius:50%;
   box-shadow:inset -2px -2px 4px rgba(0,0,0,.3),2px 2px 4px rgba(0,0,0,.4);z-index:2}
