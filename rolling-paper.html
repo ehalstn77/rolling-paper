@@ -42,10 +42,10 @@ body{font-family:var(--font);color:var(--text);min-height:100vh;padding:24px 16p
 .tabs{display:flex;overflow:hidden;border:1px solid var(--border-md);border-radius:var(--r-md);width:fit-content;margin-bottom:14px}
 .tab{padding:7px 18px;font-size:13px;font-family:var(--font);background:transparent;border:none;color:var(--muted);cursor:pointer}
 .tab.on{background:var(--text);color:#fff}
-textarea{width:440px;height:440px;resize:none;font-size:14px;font-family:var(--font);
+textarea{width:min(440px,100%);height:440px;resize:none;font-size:14px;font-family:var(--font);
   line-height:1.75;padding:16px;border:1px solid var(--border-md);border-radius:var(--r-md);
   background:#FFFD82;color:#333;outline:none;display:block}
-#cvs{display:block;width:440px;height:440px;border:1px solid var(--border-md);
+#cvs{display:block;width:min(440px,100%);height:440px;border:1px solid var(--border-md);
   border-radius:var(--r-md);cursor:crosshair;touch-action:none;background:#FFFD82}
 .cbtns{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .penrow{display:flex;align-items:center;gap:8px;flex:1;min-width:160px}
@@ -416,6 +416,9 @@ function toast(msg){
 
 initCvs();
 applySt(getSt());
+// 초기 textarea 색 설정
+document.getElementById('ta').style.background=COLORS[0].bg;
+document.getElementById('ta').style.color=COLORS[0].text;
 </script>
 </body>
 </html>
