@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#faf9f6;--surface:#fff;--border:rgba(0,0,0,.1);--border-md:rgba(0,0,0,.18);
-  --text:#1a1a1a;--muted:#6b6b6b;--hint:#9a9a9a;
+  --text:#1a1a1a;--muted:#6b6b6b;
   --r-md:8px;--r-lg:14px;
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
@@ -52,8 +52,6 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
 .penrow label{font-size:12px;color:var(--muted);white-space:nowrap}
 .penrow input[type=range]{flex:1}
 .subrow{display:flex;justify-content:flex-end;margin-top:16px}
-
-/* 보드 */
 .board{display:flex;flex-wrap:wrap;gap:50px 30px;padding:50px 10px;align-items:flex-start}
 .card{width:220px;min-height:220px;flex-shrink:0;flex-grow:0;
   display:flex;flex-direction:column;
@@ -63,7 +61,7 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
   width:16px;height:16px;background:#E53935;border-radius:50%;
   box-shadow:inset -2px -2px 4px rgba(0,0,0,.3),2px 2px 4px rgba(0,0,0,.4);z-index:2}
 .pin::after{content:'';position:absolute;top:10px;left:7px;width:2px;height:12px;
-  background:#777;transform:rotate(30deg);box-shadow:1px 1px 1px rgba(0,0,0,.2)}
+  background:#777;transform:rotate(30deg)}
 .cname{font-size:12px;font-weight:700;margin-bottom:10px;opacity:.75;
   border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:4px}
 .ctext{font-size:14px;line-height:1.65;word-break:break-word;flex:1}
@@ -73,7 +71,6 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
   border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;
   cursor:pointer;opacity:0;transition:opacity .15s;font-size:12px;z-index:3}
 .card:hover .cdel{opacity:1}
-
 .empty{text-align:center;padding:60px 20px;color:#fff;font-size:14px;font-weight:500}
 .empty i{font-size:40px;display:block;margin-bottom:10px}
 .badge{display:inline-block;background:rgba(0,0,0,.07);border-radius:20px;
@@ -108,9 +105,7 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
 </style>
 </head>
 <body>
-
 <div class="loading" id="loading"><div class="spin"></div><p>데이터 불러오는 중...</p></div>
-
 <div class="wrap">
   <div class="top-bar">
     <div class="title-wrap">
@@ -123,7 +118,6 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
       <button class="btn" onclick="doClear()"><i class="ti ti-trash"></i> 전체 삭제</button>
     </div>
   </div>
-
   <div class="compose">
     <div class="row1">
       <input class="name-in" id="nin" placeholder="이름 또는 닉네임" maxlength="20">
@@ -147,16 +141,14 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
       </div>
     </div>
     <div class="subrow">
-      <button class="btn btn-p" onclick="submit()"><i class="ti ti-send"></i> 보드에 꽂기</button>
+      <button class="btn btn-p" onclick="doSubmit()"><i class="ti ti-send"></i> 보드에 꽂기</button>
     </div>
   </div>
-
   <div class="board" id="board"></div>
   <div class="empty" id="empty" style="display:none">
-    <i class="ti ti-pin"></i>아직 포스트잇이 없어요. 첫 번째 메시지를 남겨보세요!
+    <i class="ti ti-pin"></i><p>아직 포스트잇이 없어요. 첫 번째 메시지를 남겨보세요!</p>
   </div>
 </div>
-
 <div class="modal-bg" id="modal">
   <div class="modal">
     <h2>페이지 설정</h2>
@@ -172,21 +164,50 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- Firebase SDK를 일반 스크립트로 로드 (module 방식 제거) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-// ── 색상 ──
 const COLORS=[
-  {bg:'#FFFD82',text:'#333'},
-  {bg:'#FFD1DC',text:'#333'},
-  {bg:'#ADD8E6',text:'#333'},
-  {bg:'#90EE90',text:'#333'},
-  {bg:'#E0FFFF',text:'#333'},
-  {bg:'#E6E6FA',text:'#333'},
+  {bg:'#FFFD82',text:'#333'},{bg:'#FFD1DC',text:'#333'},
+  {bg:'#ADD8E6',text:'#333'},{bg:'#90EE90',text:'#333'},
+  {bg:'#E0FFFF',text:'#333'},{bg:'#E6E6FA',text:'#333'},
 ];
 const SK='rp_settings_v3';
 let ci=0,mode='text',drawing=false,lx=0,ly=0,ps=3,ctx=null;
-let fbPush=null,fbDel=null,fbClear=null;
+let db=null,cardsRef=null;
 
-// ── 색상 버튼 ──
+// Firebase 초기화
+const cfg={
+  apiKey:"AIzaSyBsQFx47FHyKEXLQR0HojXXMFS4OmDbJ7c",
+  authDomain:"rolling-paper-75a8e.firebaseapp.com",
+  databaseURL:"https://rolling-paper-75a8e-default-rtdb.firebaseio.com",
+  projectId:"rolling-paper-75a8e",
+  storageBucket:"rolling-paper-75a8e.firebasestorage.app",
+  messagingSenderId:"779877286803",
+  appId:"1:779877286803:web:bce73ebbcd663d1e219e66"
+};
+firebase.initializeApp(cfg);
+db=firebase.database();
+cardsRef=db.ref('cards');
+
+// 로딩 타임아웃
+const loadT=setTimeout(()=>{
+  document.getElementById('loading').style.display='none';
+  document.getElementById('empty').style.display='';
+},5000);
+
+// 실시간 데이터 수신
+cardsRef.on('value',(snap)=>{
+  clearTimeout(loadT);
+  const items=[];
+  snap.forEach(c=>items.push({id:c.key,...c.val()}));
+  items.reverse();
+  renderCards(items);
+  document.getElementById('loading').style.display='none';
+});
+
+// 색상 버튼
 (function(){
   const row=document.getElementById('cdots');
   COLORS.forEach((c,i)=>{
@@ -207,7 +228,7 @@ let fbPush=null,fbDel=null,fbClear=null;
   });
 })();
 
-// ── 캔버스 ──
+// 캔버스
 function initCvs(){
   const c=document.getElementById('cvs');
   ctx=c.getContext('2d');
@@ -239,7 +260,7 @@ function updDot(){
   document.getElementById('pdot').innerHTML=`<svg width="28" height="20"><circle cx="14" cy="10" r="${r}" fill="${COLORS[ci].text}"/></svg>`;
 }
 
-// ── 모드 ──
+// 모드
 function setMode(m){
   mode=m;
   document.getElementById('ttxt').classList.toggle('on',m==='text');
@@ -249,7 +270,7 @@ function setMode(m){
   if(m==='draw')resetCvs();
 }
 
-// ── 카드 렌더링 ──
+// 렌더링
 function renderCards(items){
   const board=document.getElementById('board');
   const empty=document.getElementById('empty');
@@ -261,9 +282,7 @@ function renderCards(items){
     const rot=(Math.sin(i*12345.67)*3).toFixed(1);
     const el=document.createElement('div');
     el.className='card';
-    el.style.background=card.color.bg;
-    el.style.color=card.color.text;
-    el.style.transform=`rotate(${rot}deg)`;
+    el.style.cssText=`background:${card.color.bg};color:${card.color.text};transform:rotate(${rot}deg);width:220px;min-height:220px;flex-shrink:0;flex-grow:0;display:flex;flex-direction:column;position:relative;border-radius:4px;padding:22px 18px 16px;box-shadow:3px 5px 12px rgba(0,0,0,.25);`;
     const inner=card.type==='text'
       ?`<div class="ctext">${esc(card.text).replace(/\n/g,'<br>')}</div>`
       :`<img class="cimg" src="${card.dataURL}" alt="손글씨">`;
@@ -277,16 +296,16 @@ function renderCards(items){
   });
 }
 
-// ── 카드 제출 ──
-async function submit(){
-  if(!fbPush){toast('Firebase 연결 중이에요');return;}
+// 제출
+function doSubmit(){
   const name=document.getElementById('nin').value.trim()||'익명';
   const c=COLORS[ci];
-  let data;
   if(mode==='text'){
     const t=document.getElementById('ta').value.trim();
     if(!t){toast('메시지를 입력해주세요');return;}
-    data={type:'text',name,text:t,color:c,time:now()};
+    cardsRef.push({type:'text',name,text:t,color:c,time:now()})
+      .then(()=>toast('보드에 꽂혔어요!'))
+      .catch(()=>toast('저장 실패. 다시 시도해주세요.'));
     document.getElementById('ta').value='';
   } else {
     const cvs=document.getElementById('cvs');
@@ -294,23 +313,27 @@ async function submit(){
     f.width=cvs.width;f.height=cvs.height;
     const fc=f.getContext('2d');
     fc.fillStyle=c.bg;fc.fillRect(0,0,f.width,f.height);fc.drawImage(cvs,0,0);
-    data={type:'draw',name,dataURL:f.toDataURL('image/png'),color:c,time:now()};
+    cardsRef.push({type:'draw',name,dataURL:f.toDataURL('image/png'),color:c,time:now()})
+      .then(()=>toast('보드에 꽂혔어요!'))
+      .catch(()=>toast('저장 실패. 다시 시도해주세요.'));
     resetCvs();
   }
-  try{await fbPush(data);toast('보드에 꽂혔어요!');}
-  catch(e){toast('저장 실패. 다시 시도해주세요.');}
 }
 
-async function delCard(id){
+function delCard(id){
   if(!confirm('이 카드를 삭제할까요?'))return;
-  try{await fbDel(id);toast('삭제됐어요');}catch(e){toast('삭제 실패');}
+  db.ref('cards/'+id).remove()
+    .then(()=>toast('삭제됐어요'))
+    .catch(()=>toast('삭제 실패'));
 }
-async function doClear(){
+function doClear(){
   if(!confirm('모든 카드를 삭제할까요?'))return;
-  try{await fbClear();toast('전체 삭제됐어요');}catch(e){toast('삭제 실패');}
+  cardsRef.remove()
+    .then(()=>toast('전체 삭제됐어요'))
+    .catch(()=>toast('삭제 실패'));
 }
 
-// ── 설정 ──
+// 설정
 function openSet(){
   const s=getSt();
   document.getElementById('s-recv').value=s.recv||'';
@@ -332,20 +355,19 @@ function applySt({recv,sub}){
 }
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeSet();});
 
-// ── 출력 ──
+// 출력
 function printBoard(){
   const items=Array.from(document.querySelectorAll('.card'));
+  if(items.length===0){toast('카드가 없어요');return;}
   const rows=items.map(card=>{
     const cl=card.cloneNode(true);
     const d=cl.querySelector('.cdel');if(d)d.remove();
-    cl.style.marginBottom='20px';cl.style.breakInside='avoid';
     return cl.outerHTML;
   }).join('');
   const win=window.open('','_blank','width=1200,height=800');
   const recv=document.getElementById('ptitle').textContent.replace(/\d+개/,'').trim();
   const sub=document.getElementById('psub').textContent;
-  win.document.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
-<title>롤링페이퍼 인쇄</title>
+  win.document.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>롤링페이퍼 인쇄</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:sans-serif;padding:60px;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
@@ -356,24 +378,24 @@ body{font-family:sans-serif;padding:60px;-webkit-print-color-adjust:exact!import
 h1{font-size:36px;font-weight:700;background:rgba(255,255,255,.85);display:inline-block;padding:12px 28px;border-radius:12px}
 p{font-size:18px;background:rgba(255,255,255,.85);display:inline-block;padding:7px 18px;border-radius:10px;margin-top:10px}
 .board{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:flex-start}
-.card{width:250px;min-height:250px;display:flex;flex-direction:column;position:relative;
-  border-radius:4px;padding:22px 18px 16px;box-shadow:3px 6px 15px rgba(0,0,0,.3)!important;break-inside:avoid;flex-shrink:0}
+.card{width:220px;min-height:220px;display:flex;flex-direction:column;position:relative;
+  border-radius:4px;padding:22px 18px 16px;box-shadow:3px 6px 15px rgba(0,0,0,.3)!important;break-inside:avoid;flex-shrink:0;flex-grow:0}
 .pin{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:16px;height:16px;
   background:#E53935;border-radius:50%;box-shadow:inset -2px -2px 4px rgba(0,0,0,.3),2px 2px 4px rgba(0,0,0,.4);z-index:2}
-.cname{font-size:14px;font-weight:700;margin-bottom:10px;opacity:.75;border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:4px}
-.ctext{font-size:16px;line-height:1.65;word-break:break-word;flex:1}
+.cname{font-size:13px;font-weight:700;margin-bottom:10px;opacity:.75;border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:4px}
+.ctext{font-size:15px;line-height:1.65;word-break:break-word;flex:1}
 .cimg{width:100%;border-radius:4px;display:block}
-.ctime{font-size:12px;opacity:.45;text-align:right;margin-top:12px}
+.ctime{font-size:11px;opacity:.45;text-align:right;margin-top:12px}
 @page{size:A0 landscape;margin:3cm}
 </style></head><body>
 <div class="hdr"><h1>${recv}</h1><br><p>${sub}</p></div>
 <div class="board">${rows}</div>
-<script>window.onload=()=>{setTimeout(()=>{window.print();},500);}<\/script>
+<script>window.onload=()=>{setTimeout(()=>window.print(),500);}<\/script>
 </body></html>`);
   win.document.close();
 }
 
-// ── 유틸 ──
+// 유틸
 function now(){return new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function toast(msg){
@@ -381,59 +403,8 @@ function toast(msg){
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-// ── 초기화 ──
 initCvs();
 applySt(getSt());
-</script>
-
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import{getDatabase,ref,push,onValue,remove,get}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const cfg={
-  apiKey:"AIzaSyBsQFx47FHyKEXLQR0HojXXMFS4OmDbJ7c",
-  authDomain:"rolling-paper-75a8e.firebaseapp.com",
-  databaseURL:"https://rolling-paper-75a8e-default-rtdb.firebaseio.com",
-  projectId:"rolling-paper-75a8e",
-  storageBucket:"rolling-paper-75a8e.firebasestorage.app",
-  messagingSenderId:"779877286803",
-  appId:"1:779877286803:web:bce73ebbcd663d1e219e66"
-};
-
-const app=initializeApp(cfg);
-const db=getDatabase(app);
-const cr=ref(db,'cards');
-
-// 전역 함수에 Firebase 연결
-window.fbPush=(data)=>push(cr,data);
-window.fbDel=(id)=>remove(ref(db,'cards/'+id));
-window.fbClear=async()=>{
-  const snap=await get(cr);
-  if(snap.exists()){
-    const ps=[];
-    snap.forEach(c=>ps.push(remove(ref(db,'cards/'+c.key))));
-    await Promise.all(ps);
-  }
-};
-
-// 전역 변수에도 연결
-fbPush=window.fbPush;
-fbDel=window.fbDel;
-fbClear=window.fbClear;
-
-const t=setTimeout(()=>{
-  document.getElementById('loading').style.display='none';
-  document.getElementById('empty').style.display='';
-},4000);
-
-onValue(cr,(snap)=>{
-  clearTimeout(t);
-  const items=[];
-  snap.forEach(c=>items.push({id:c.key,...c.val()}));
-  items.reverse();
-  renderCards(items);
-  document.getElementById('loading').style.display='none';
-});
 </script>
 </body>
 </html>
