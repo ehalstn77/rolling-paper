@@ -201,7 +201,7 @@ const loadT=setTimeout(()=>{
 cardsRef.on('value',(snap)=>{
   clearTimeout(loadT);
   const items=[];
- snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82',text:'#333'},name:c.val().name,text:c.val().text,dataURL:c.val().dataURL,type:c.val().type,time:c.val().time});});
+  snap.forEach(c=>items.push({id:c.key,...c.val()}));
   items.reverse();
   renderCards(items);
   document.getElementById('loading').style.display='none';
@@ -321,12 +321,14 @@ function doSubmit(){
 }
 
 function delCard(id){
+  if(!checkPw()){alert('비밀번호가 틀렸어요');return;}
   if(!confirm('이 카드를 삭제할까요?'))return;
   db.ref('cards/'+id).remove()
     .then(()=>toast('삭제됐어요'))
     .catch(()=>toast('삭제 실패'));
 }
 function doClear(){
+  if(!checkPw()){alert('비밀번호가 틀렸어요');return;}
   if(!confirm('모든 카드를 삭제할까요?'))return;
   cardsRef.remove()
     .then(()=>toast('전체 삭제됐어요'))
@@ -334,7 +336,9 @@ function doClear(){
 }
 
 // 설정
+function checkPw(){return prompt('관리자 비밀번호를 입력하세요')==='361377';}
 function openSet(){
+  if(!checkPw()){alert('비밀번호가 틀렸어요');return;}
   const s=getSt();
   document.getElementById('s-recv').value=s.recv||'';
   document.getElementById('s-sub').value=s.sub||'';
@@ -357,6 +361,7 @@ document.getElementById('modal').addEventListener('click',function(e){if(e.targe
 
 // 출력
 function printBoard(){
+  if(!checkPw()){alert('비밀번호가 틀렸어요');return;}
   const items=Array.from(document.querySelectorAll('.card'));
   if(items.length===0){toast('카드가 없어요');return;}
   const rows=items.map(card=>{
@@ -364,6 +369,7 @@ function printBoard(){
     const d=cl.querySelector('.cdel');if(d)d.remove();
     return cl.outerHTML;
   }).join('');
+  const size=confirm('A0 사이즈로 출력할까요?\n(확인=A0, 취소=A1)')?'A0':'A1';
   const win=window.open('','_blank','width=1200,height=800');
   const recv=document.getElementById('ptitle').textContent.replace(/\d+개/,'').trim();
   const sub=document.getElementById('psub').textContent;
@@ -386,7 +392,7 @@ p{font-size:18px;background:rgba(255,255,255,.85);display:inline-block;padding:7
 .ctext{font-size:15px;line-height:1.65;word-break:break-word;flex:1}
 .cimg{width:100%;border-radius:4px;display:block}
 .ctime{font-size:11px;opacity:.45;text-align:right;margin-top:12px}
-@page{size:A0 landscape;margin:3cm}
+@page{size:${size} landscape;margin:2cm}
 </style></head><body>
 <div class="hdr"><h1>${recv}</h1><br><p>${sub}</p></div>
 <div class="board">${rows}</div>
