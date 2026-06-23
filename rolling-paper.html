@@ -42,8 +42,8 @@ body{font-family:var(--font);color:var(--text);min-height:100vh;padding:24px 16p
 .tabs{display:flex;overflow:hidden;border:1px solid var(--border-md);border-radius:var(--r-md);width:fit-content;margin-bottom:14px}
 .tab{padding:7px 18px;font-size:13px;font-family:var(--font);background:transparent;border:none;color:var(--muted);cursor:pointer}
 .tab.on{background:var(--text);color:#fff}
-textarea{width:min(440px,100%);height:440px;resize:none;font-size:14px;font-family:var(--font);
-  line-height:1.75;padding:16px;border:1px solid var(--border-md);border-radius:var(--r-md);
+textarea{width:min(440px,100%);height:440px;resize:none;font-size:22px;font-family:var(--font);
+  line-height:1.6;padding:16px;border:1px solid var(--border-md);border-radius:var(--r-md);
   background:#FFFD82;color:#333;outline:none;display:block}
 #cvs{display:block;width:min(440px,100%);height:440px;border:1px solid var(--border-md);
   border-radius:var(--r-md);cursor:crosshair;touch-action:none;background:#FFFD82}
@@ -128,7 +128,10 @@ textarea{width:min(440px,100%);height:440px;resize:none;font-size:14px;font-fami
       <button class="tab on" id="ttxt" onclick="setMode('text')">자판 입력</button>
       <button class="tab" id="tdraw" onclick="setMode('draw')">손글씨</button>
     </div>
-    <div id="mtext"><textarea id="ta" placeholder="따뜻한 메시지를 남겨보세요..."></textarea></div>
+    <div id="mtext">
+      <textarea id="ta" placeholder="따뜻한 메시지를 남겨보세요..." maxlength="150" oninput="updCount()"></textarea>
+      <div style="text-align:right;font-size:12px;color:var(--muted);margin-top:4px"><span id="tcount">0</span>/150</div>
+    </div>
     <div id="mdraw" style="display:none">
       <canvas id="cvs" width="440" height="440"></canvas>
       <div class="cbtns">
@@ -289,7 +292,7 @@ function renderCards(items){
     el.className='card';
     el.style.cssText=`background:${card.color.bg};color:${card.color.text};transform:rotate(${rot}deg);width:220px;min-height:220px;flex-shrink:0;flex-grow:0;display:flex;flex-direction:column;position:relative;border-radius:4px;padding:22px 18px 16px;box-shadow:3px 5px 12px rgba(0,0,0,.25);`;
     const inner=card.type==='text'
-      ?`<div class="ctext">${esc(card.text).replace(/\n/g,'<br>')}</div>`
+      ?`<div class="ctext" style="font-size:clamp(10px,1.8vw,14px);">${esc(card.text).replace(/\n/g,'<br>')}</div>`
       :`<img class="cimg" src="${card.dataURL}" alt="손글씨">`;
     el.innerHTML=`
       <div class="pin"></div>
@@ -414,6 +417,10 @@ function toast(msg){
   clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
+function updCount(){
+  const t=document.getElementById('ta');
+  document.getElementById('tcount').textContent=t.value.length;
+}
 initCvs();
 applySt(getSt());
 // 초기 textarea 색 설정
