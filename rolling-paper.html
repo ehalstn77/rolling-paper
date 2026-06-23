@@ -45,8 +45,8 @@ body{font-family:var(--font);color:var(--text);min-height:100vh;padding:24px 16p
 textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:var(--font);
   line-height:1.75;padding:10px 13px;border:1px solid var(--border-md);border-radius:var(--r-md);
   background:var(--bg);color:var(--text);outline:none}
-#cvs{display:block;width:100%;height:170px;border:1px solid var(--border-md);
-  border-radius:var(--r-md);cursor:crosshair;touch-action:none}
+#cvs{display:block;width:220px;height:220px;border:1px solid var(--border-md);
+  border-radius:var(--r-md);cursor:crosshair;touch-action:none;background:#FFFD82}
 .cbtns{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .penrow{display:flex;align-items:center;gap:8px;flex:1;min-width:160px}
 .penrow label{font-size:12px;color:var(--muted);white-space:nowrap}
@@ -130,7 +130,7 @@ textarea{width:100%;min-height:100px;resize:vertical;font-size:14px;font-family:
     </div>
     <div id="mtext"><textarea id="ta" placeholder="따뜻한 메시지를 남겨보세요..."></textarea></div>
     <div id="mdraw" style="display:none">
-      <canvas id="cvs" width="840" height="170"></canvas>
+      <canvas id="cvs" width="220" height="220"></canvas>
       <div class="cbtns">
         <button class="btn" onclick="clearCvs()"><i class="ti ti-eraser"></i> 지우기</button>
         <div class="penrow">
@@ -230,9 +230,8 @@ snap.forEach(function(c){items.push({id:c.key,color:c.val().color||{bg:'#FFFD82'
 // 캔버스
 function initCvs(){
   const c=document.getElementById('cvs');
-  // 캔버스 내부 해상도를 실제 표시 크기에 맞춤
-  const rect=c.getBoundingClientRect();
-  if(rect.width>0){c.width=Math.floor(rect.width);c.height=170;}
+  // 캔버스 고정 크기 (포스트잇과 동일)
+  c.width=220;c.height=220;
   ctx=c.getContext('2d');
   resetCvs();
   const gp=e=>{
