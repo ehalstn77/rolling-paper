@@ -200,6 +200,15 @@ const loadT=setTimeout(()=>{
   document.getElementById('empty').style.display='';
 },5000);
 
+// Firebase에서 설정 실시간 불러오기
+db.ref('settings').on('value',(snap)=>{
+  if(snap.exists()){
+    const s=snap.val();
+    localStorage.setItem(SK,JSON.stringify(s));
+    applySt(s);
+  }
+});
+
 // 실시간 데이터 수신
 cardsRef.on('value',(snap)=>{
   clearTimeout(loadT);
@@ -358,6 +367,8 @@ function saveSet(){
   const recv=document.getElementById('s-recv').value.trim();
   const sub=document.getElementById('s-sub').value.trim();
   localStorage.setItem(SK,JSON.stringify({recv,sub}));
+  // Firebase에도 설정 저장
+  if(db) db.ref('settings').set({recv,sub});
   applySt({recv,sub});closeSet();toast('설정 저장됐어요');
 }
 function getSt(){try{return JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){return{};}}
