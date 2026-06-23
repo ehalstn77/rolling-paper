@@ -402,9 +402,17 @@ function doSubmit(){
 }
 
 function delCard(id,pw){
+  // 비밀번호 없이 작성한 카드는 바로 삭제
+  if(!pw){
+    if(!confirm('이 카드를 삭제할까요?'))return;
+    db.ref('cards/'+id).remove()
+      .then(()=>toast('삭제됐어요'))
+      .catch(()=>toast('삭제 실패'));
+    return;
+  }
   const input=prompt('비밀번호를 입력하세요\n(작성 시 설정한 개인 비밀번호 또는 관리자 비밀번호)');
   if(input===null)return;
-  if(input==='361377'||(pw&&input===pw)||(pw===''&&input==='')){
+  if(input==='361377'||input===pw){
     if(!confirm('이 카드를 삭제할까요?'))return;
     db.ref('cards/'+id).remove()
       .then(()=>toast('삭제됐어요'))
