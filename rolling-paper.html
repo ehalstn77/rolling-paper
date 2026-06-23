@@ -133,7 +133,10 @@ textarea{width:min(440px,100%);height:440px;resize:none;font-size:22px;font-fami
       <div style="text-align:right;font-size:12px;color:var(--muted);margin-top:4px"><span id="tcount">0</span>/150</div>
     </div>
     <div id="mdraw" style="display:none">
-      <canvas id="cvs" width="440" height="440"></canvas>
+      <div style="position:relative;display:inline-block;">
+        <canvas id="cvs" width="440" height="440"></canvas>
+        <canvas id="cursor-cvs" width="440" height="440" style="position:absolute;top:0;left:0;width:min(440px,100%);height:440px;pointer-events:none;border-radius:var(--r-md);"></canvas>
+      </div>
       <div class="cbtns">
         <button class="btn" id="btn-pen" onclick="setPenMode('pen')"><i class="ti ti-pencil"></i> 펜</button>
         <button class="btn" id="btn-eraser" onclick="setPenMode('eraser')">⭕ 지우개</button>
@@ -261,8 +264,32 @@ function initCvs(){
   c.addEventListener('mousemove',e=>{if(!drawing)return;const[x,y]=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();[lx,ly]=[x,y];});
   c.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const[x,y]=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();[lx,ly]=[x,y];},{passive:false});
   c.addEventListener('mouseup',()=>drawing=false);
-  c.addEventListener('touchend',()=>drawing=false);
-  c.addEventListener('mouseleave',()=>drawing=false);
+  c.addEventListener('touchend',()=>{drawing=false;clearCursor();});
+  c.addEventListener('mouseleave',()=>{drawing=false;clearCursor();});
+  c.addEventListener('mousemove',(e)=>{if(penMode==='eraser')showCursor(gp(e));});
+  c.addEventListener('touchmove',(e)=>{if(penMode==='eraser')showCursor(gp(e));},{passive:true});
+}
+
+function showCursor([x,y]){
+  const cc=document.getElementById('cursor-cvs');
+  if(!cc)return;
+  const cctx=cc.getContext('2d');
+  const r=cc.getBoundingClientRect();
+  cc.width=Math.floor(r.width)||440;
+  cc.height=Math.floor(r.height)||440;
+  const sx=cc.width/440; const sy=cc.height/440;
+  cctx.clearRect(0,0,cc.width,cc.height);
+  cctx.beginPath();
+  cctx.arc(x*sx,y*sy,(ps*5/2)*sx,0,Math.PI*2);
+  cctx.strokeStyle='rgba(255,0,0,0.6)';
+  cctx.lineWidth=2;
+  cctx.stroke();
+}
+function clearCursor(){
+  const cc=document.getElementById('cursor-cvs');
+  if(!cc)return;
+  const cctx=cc.getContext('2d');
+  cctx.clearRect(0,0,cc.width,cc.height);
 }
 function resetCvs(){
   const c=document.getElementById('cvs');
@@ -283,6 +310,7 @@ function setPenMode(m){
   penMode=m;
   document.getElementById('btn-pen').classList.toggle('btn-p', m==='pen');
   document.getElementById('btn-eraser').classList.toggle('btn-p', m==='eraser');
+  clearCursor();
   if(ctx){
     if(m==='eraser'){
       ctx.globalCompositeOperation='destination-out';
